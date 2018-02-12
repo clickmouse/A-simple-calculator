@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include<stdlib.h>
+#include <math.h>
 typedef struct calculate
 {
 	int num;
@@ -39,88 +40,157 @@ CAL* Creature_Cal(){
 void Print_Cal(CAL*head){
 	int num;
 	char symbol;
-	int store_num;
-	char store_symbol;
-	int flag=0;
-	CAL*ptr1=head;
+	int store_num_plus;
+	char store_symbol_plus;
+	int store_num_multi;
+	char store_symbol_multi;
+	int flag_plus=0;
+	int flag_multi=0;
+	CAL*ptr=head;
 	if(head==NULL) return;
-	num=ptr1->num;
-	symbol=ptr1->symbol;
+	num=ptr->num;
+	symbol=ptr->symbol;
 	do{
-		ptr1=ptr1->next;
-		if(ptr1==NULL){
+		ptr=ptr->next;
+		if(ptr==NULL){
 /*C*/		printf("%d\n",num);
 			return;
 		}
-		if((symbol=='+'||symbol=='-')&&(ptr1->symbol=='='))
+		if((symbol=='+'||symbol=='-')&&(ptr->symbol=='='))
 /*AC*/		switch(symbol){
 				case '+':
-					ptr1->num+=num;
+					ptr->num+=num;
 					break;
 				default:
-					ptr1->num-=num;
+					ptr->num-=num;
 			}
-		else if((symbol=='*'||symbol=='/')&&(ptr1->symbol=='=')){
+		else if((symbol=='*'||symbol=='/')&&(ptr->symbol=='=')){
 /*BC*/		switch(symbol){
 				case '*':
-					ptr1->num*=num;
+					ptr->num*=num;
 					break;
 				default:
-					ptr1->num/=num;
+					ptr->num/=num;
 			}
-			if(flag==1){
-				switch(store_symbol){
+			if(flag_plus==1){
+				switch(store_symbol_plus){
 					case '+':
-						ptr1->num=store_num+ptr1->num;
+						ptr->num=store_num_plus+ptr->num;
 						break;
 					default:
-						ptr1->num=store_num-ptr1->num;
+						ptr->num=store_num_plus-ptr->num;
 				}
-				flag=0;
+				flag_plus=0;
 			}
 		}
-		else if((symbol=='*'||symbol=='/')&&(ptr1->symbol=='*'||ptr1->symbol=='/'))
+		else if((symbol=='*'||symbol=='/')&&(ptr->symbol=='*'||ptr->symbol=='/'))
 /*BB*/		switch(symbol){
 				case '*':
-					ptr1->num*=num;
+					ptr->num*=num;
 					break;
 				default:
-					ptr1->num=num/ptr1->num;
+					ptr->num=num/ptr->num;
 			}
-		else if((symbol=='+'||symbol=='-')&&(ptr1->symbol=='+'||ptr1->symbol=='-'))
+		else if((symbol=='+'||symbol=='-')&&(ptr->symbol=='+'||ptr->symbol=='-'))
 /*AA*/		switch(symbol){
 				case '+':
-					ptr1->num+=num;
+					ptr->num+=num;
 					break;
 				default:
-					ptr1->num=num-ptr1->num;
+					ptr->num=num-ptr->num;
 			}
-		else if((symbol=='*'||symbol=='/')&&(ptr1->symbol=='+'||ptr1->symbol=='-')){
+		else if((symbol=='*'||symbol=='/')&&(ptr->symbol=='+'||ptr->symbol=='-')){
 /*BA*/		switch(symbol){
 				case '*':
-					ptr1->num*=num;
+					ptr->num*=num;
 					break;
 				default:
-					ptr1->num=num/ptr1->num;
+					ptr->num=num/ptr->num;
 			}
-			if(flag==1){
-				switch(store_symbol){
+			if(flag_plus==1){
+				switch(store_symbol_plus){
 					case '+':
-						ptr1->num=store_num+ptr1->num;
+						ptr->num=store_num_plus+ptr->num;
 						break;
 					default:
-						ptr1->num=store_num-ptr1->num;
+						ptr->num=store_num_plus-ptr->num;
 				}
-				flag=0;
+				flag_plus=0;
 			}
 		}
-		else if((symbol=='+'||symbol=='-')&&(ptr1->symbol=='*'||ptr1->symbol=='/')){
-/*AB*/		store_num=num;
-			store_symbol=symbol;
-			flag=1;		
-		};
-		num=ptr1->num;
-		symbol=ptr1->symbol;
-	}while(ptr1->symbol!='=');
+		else if((symbol=='+'||symbol=='-')&&(ptr->symbol=='*'||ptr->symbol=='/'||ptr->symbol=='^')){
+/*AB*/		store_num_plus=num;
+			store_symbol_plus=symbol;
+			flag_plus=1;		
+		}
+		else if((symbol=='*'||symbol=='/')&&(ptr->symbol=='^')){
+			store_num_multi=num;
+			store_symbol_multi=symbol;
+			flag_multi=1;
+		}
+		else if((symbol=='^')&&(ptr->symbol=='=')){
+/*DC*/		ptr->num=pow(num,ptr->num);
+			if(flag_multi==1){
+				switch(store_symbol_multi){
+					case '*':
+						ptr->num=store_num_multi*ptr->num;
+						break;
+					default:
+						ptr->num=store_num_multi/ptr->num;
+				}
+				flag_multi=0;
+			}
+			if(flag_plus==1){
+				switch(store_symbol_plus){
+					case '+':
+						ptr->num=store_num_plus+ptr->num;
+						break;
+					default:
+						ptr->num=store_num_plus-ptr->num;
+				}
+				flag_plus=0;
+			}
+		}
+		else if((symbol=='^')&&(ptr->symbol=='+'||ptr->symbol=='-')){
+/*DA*/		ptr->num=pow(num,ptr->num);
+			if(flag_multi==1){
+				switch(store_symbol_multi){
+					case '*':
+						ptr->num=store_num_multi*ptr->num;
+						break;
+					default:
+						ptr->num=store_num_multi/ptr->num;
+				}
+				flag_multi=0;
+			}
+			if(flag_plus==1){
+				switch(store_symbol_plus){
+					case '+':
+						ptr->num=store_num_plus+ptr->num;
+						break;
+					default:
+						ptr->num=store_num_plus-ptr->num;
+				}
+				flag_plus=0;
+			}
+		}
+		else if((symbol=='^')&&(ptr->symbol=='*'||ptr->symbol=='/')){
+/*DB*/		ptr->num=pow(num,ptr->num);
+			if(flag_multi==1){
+				switch(store_symbol_multi){
+					case '*':
+						ptr->num=store_num_multi*ptr->num;
+						break;
+					default:
+						ptr->num=store_num_multi/ptr->num;
+				}
+				flag_multi=0;
+			}
+		}
+		else if(symbol=='^'&&ptr->symbol=='^')
+/*DD*/		ptr->num=pow(num,ptr->num);
+		num=ptr->num;
+		symbol=ptr->symbol;
+	}while(ptr->symbol!='=');
 	printf("%d\n",num);
 }
